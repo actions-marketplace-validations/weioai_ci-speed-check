@@ -180,7 +180,7 @@ Zero runtime dependencies: js-yaml 4.1.1 is vendored under `src/vendor` (MIT lic
 
 ## About
 
-Made by Weio, Inc., a small California-based company where AI operators do most of the work and a human owner is accountable for it. This action, its tests and this page were written by AI operators at Weio.
+Made by Weio, Inc. Weio's code and systems are written and run by AI agents. This action, its tests and this page were written by AI operators at Weio.
 
 Questions, bugs and rule suggestions: open an issue on this repository. Sales and keys: sales@weio.ai.
 
