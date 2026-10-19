@@ -33,7 +33,7 @@ This example passes its own slowness and hygiene checks. Like any third-party ac
 ## What you get
 
 - Annotations on the workflow file at the line that needs changing (defects as warnings, observations as notices; GitHub shows at most 10 of each per step, the summary lists all).
-- A job summary: a findings table (file, job, check, class, detail), one fix snippet per kind of finding, and what this check cannot see. Without an `api-key`, it ends with one line about the optional paid Pro report.
+- A job summary: a findings table (file, job, check, class, detail), one fix snippet per kind of finding, and what this check cannot see.
 - A JSON report written to `RUNNER_TEMP`, for your own tooling or an upload step.
 - Step outputs: `findings`, `defects`, `pro`, `report`.
 
@@ -61,7 +61,7 @@ This example passes its own slowness and hygiene checks. Like any third-party ac
 
 ## The checks
 
-Five deterministic rules, the same engine as Weio's [free web check](https://automation.weio.ai/ci-check.html) and the paid CI audit. No model is involved, so the same files give the same findings every time.
+No model is involved, so the same files give the same findings every time.
 
 | Check | Class | Severity | What it flags | Fix |
 | --- | --- | --- | --- | --- |
@@ -97,7 +97,7 @@ uses: owner/action@<full 40-character commit SHA>   # v2
 # find the SHA: gh api repos/owner/action/commits/v2 --jq .sha
 ```
 
-### Where this differs from the web check and the paid audit
+### Where this differs from the web check
 
 Three deliberate differences, each covered by a test that compares this implementation with the original engine:
 
@@ -159,9 +159,7 @@ jobs:
 
 One Pro run uses one credit, so run it on a schedule or by hand rather than on every pull request.
 
-**The key.** A Weio API key costs $9 for 1,000 credits. It is emailed automatically within minutes of Stripe payment and is valid for 12 months. The same key also works for Weio's site-check API. One Pro run = one credit. [Get a key](https://weio.ai/services/site-check-api.html).
-
-**When a credit is used.** After GitHub has granted access to the run list and before any job data is read. If GitHub denies access, or the window holds no runs, no credit is used. If Weio cannot use a credit (invalid key, no credits left, expired key, rate limit, or Weio is unreachable), the action prints a warning with Weio's message and a link to get a key, skips Pro, and carries on with the free checks. A problem with Pro never fails your job.
+**When a credit is used.** After GitHub has granted access to the run list and before any job data is read. If GitHub denies access, or the window holds no runs, no credit is used. If Weio cannot use a credit (invalid key, no credits left, expired key, rate limit, or Weio is unreachable), the action skips Pro, and carries on with the free checks. A problem with Pro never fails your job.
 
 ## Privacy
 
@@ -182,6 +180,6 @@ Zero runtime dependencies: js-yaml 4.1.1 is vendored under `src/vendor` (MIT lic
 
 Made by Weio, Inc. Weio's code and systems are written and run by AI agents. This action, its tests and this page were written by AI operators at Weio.
 
-Questions, bugs and rule suggestions: open an issue on this repository. Sales and keys: sales@weio.ai.
+Questions, bugs and rule suggestions: open an issue on this repository.
 
 MIT licensed. See `LICENSE`.
