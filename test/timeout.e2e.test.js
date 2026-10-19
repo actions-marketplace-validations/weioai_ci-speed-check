@@ -10,7 +10,7 @@ const {spawn} = require("child_process");
 const M = require("./mocks");
 
 const KEY = "wk_TESTKEY0123456789abcdefghijkl";
-const BUY_URL = "https://weio.ai/services/site-check-api.html";
+const BUY_URL = "https://weio.ai/services/site-check-api.html"; // retired offer link: the output must not carry it
 
 test("Pro: a credit request that gets no answer is abandoned after 15 s with a warning, exit 0, no job data read", async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "csc-timeout-"));
@@ -37,7 +37,7 @@ test("Pro: a credit request that gets no answer is abandoned after 15 s with a w
     assert.equal(result.code, 0);
     assert.ok(elapsed >= 14500 && elapsed < 25000, "elapsed " + elapsed);
     const w = result.stdout.split("\n").find((l) => l.startsWith("::warning title=CI Speed Check Pro::"));
-    assert.ok(w && /no answer within 15 s/.test(w) && w.includes(BUY_URL), w);
+    assert.ok(w && /no answer within 15 s/.test(w) && !w.includes(BUY_URL) && !w.includes("weio.ai/services"), w);
     assert.deepEqual(log, ["runs:1", "credit"]);
   } finally {
     hang.closeAllConnections();
