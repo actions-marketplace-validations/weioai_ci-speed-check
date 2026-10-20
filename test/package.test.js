@@ -100,12 +100,10 @@ test("history.js has no GitHub-Actions-specific I/O", () => {
   assert.ok(!/process\.(env|stdout|stderr)|\bGITHUB_(?!ERROR)|console\./.test(src));
 });
 
-test("BUY_URL is a single constant", () => {
+test("the retired key-purchase link and price are absent from the source", () => {
   const url = "https://weio.ai/services/site-check-api.html";
-  let n = 0;
-  for (const f of ["src/index.js", "src/rules.js", "src/history.js"]) n += read(f).split(url).length - 1;
-  assert.equal(n, 1);
-  assert.match(read("src/index.js"), /var BUY_URL = "https:\/\/weio\.ai\/services\/site-check-api\.html";/);
+  for (const f of ["src/index.js", "src/rules.js", "src/history.js"]) assert.ok(!read(f).includes(url), f);
+  assert.ok(!/BUY_URL|\$9\b|1,000 credits/.test(read("src/index.js")));
 });
 
 test("README quick start passes our own slowness and hygiene checks; only the action's own tag is reported", () => {
@@ -134,28 +132,25 @@ test("README Pro example passes the slowness and hygiene checks and grants actio
 });
 
 test("README states the Pro facts exactly and makes no savings claims", () => {
-  assert.ok(readme.includes("costs $9 for 1,000 credits"));
-  assert.ok(readme.includes("emailed automatically within minutes of Stripe payment"));
-  assert.ok(readme.includes("valid for 12 months"));
-  assert.ok(readme.includes("The same key also works for Weio's site-check API."));
-  assert.ok(readme.includes("One Pro run = one credit."));
-  assert.ok(readme.includes("https://weio.ai/services/site-check-api.html"));
-  assert.ok(readme.includes("sales@weio.ai"));
-  assert.ok(readme.includes("a small California-based company where AI operators do most of the work and a human owner is accountable"));
-  // the only dollar amount on the page is the key price
-  assert.deepEqual(readme.match(/\$\d[\d,.]*/g), ["$9"]);
+  // the retired key offer is absent: no price, payment, validity period, purchase link or sales mailbox
+  assert.ok(!readme.includes("costs $9"));
+  assert.ok(!readme.includes("Stripe"));
+  assert.ok(!readme.includes("valid for 12 months"));
+  assert.ok(!readme.includes("https://weio.ai/services/site-check-api.html"));
+  assert.ok(!readme.includes("sales@weio.ai"));
+  assert.equal(readme.match(/\$\d[\d,.]*/g), null, "no dollar amount on the page");
   assert.ok(!/!\[|shields\.io|badge|testimonial|stars?\b|% faster|save[sd]? \d/i.test(readme));
   assert.ok(!/—/.test(readme), "no em dashes");
 });
 
-test("README states the node24 runner requirement, the paid-report summary line and the setup-without-cache prerequisites", () => {
+test("README states the node24 runner requirement, the Pro-report summary line and the setup-without-cache prerequisites", () => {
   assert.ok(readme.includes("a runner that supports node24 (GHES users on old runners may need to upgrade)"));
   assert.ok(readme.includes("The fixes, in short:"));
-  assert.ok(readme.includes("it ends with one line about the optional paid Pro report"));
+  assert.ok(!readme.includes("it ends with one line about the optional Pro report"));
   assert.ok(readme.includes("`packages.lock.json` for setup-dotnet"));
   assert.ok(readme.includes("`go.sum` at the repository root"));
   assert.ok(!readme.includes("actions/checkout@v4"));
-  assert.ok(/optional paid run-history report/i.test(action.description));
+  assert.ok(!/paid/i.test(action.description));
 });
 
 test("README privacy section matches what the code does", () => {

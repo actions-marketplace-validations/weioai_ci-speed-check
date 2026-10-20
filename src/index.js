@@ -18,7 +18,6 @@ var yaml = require("./vendor/js-yaml.min.js");
 var rules = require("./rules");
 var history = require("./history");
 
-var BUY_URL = "https://weio.ai/services/site-check-api.html";
 var DEFAULT_WEIO_BASE = "https://weio.ai";
 var DEFAULT_GITHUB_API = "https://api.github.com";
 var KEY_RE = /^wk_[A-Za-z0-9_-]{24,64}$/;
@@ -170,7 +169,7 @@ function renderSummary(m) {
     }
   }
   if (m.deviationsUsed && m.deviationsUsed.length) {
-    L.push("### Where this differs from the web check and paid audit", "");
+    L.push("### Where this differs from the web check", "");
     m.deviationsUsed.forEach(function (x) { L.push("- " + E(x)); });
     L.push("");
   }
@@ -188,8 +187,6 @@ function renderSummary(m) {
       L.push("### Pro: run history", "", "Weio Pro was skipped: " + E(m.pro.skipped), "");
     }
     if (m.pro.creditLine) L.push(E(m.pro.creditLine), "");
-  } else {
-    L.push("Pro: add `api-key` to also read your repository's run history and get measured minutes (superseded runs, slowest jobs, queue time). A Weio API key is $9 for 1,000 credits, and one Pro run uses one credit: " + BUY_URL, "");
   }
   var md = L.join("\n");
   if (md.length > SUMMARY_LIMIT) md = md.slice(0, SUMMARY_LIMIT) + "\n\n(summary truncated)\n";
@@ -234,7 +231,7 @@ async function runPro(ctx) {
   function skip(msg, creditUsed) {
     return {skipped: redact(msg), creditUsed: !!creditUsed, creditsRemaining: null};
   }
-  var buy = " Get or top up a key: " + BUY_URL;
+  var buy = "";
   if (!KEY_RE.test(apiKey)) {
     return skip("the api-key value does not look like a Weio API key (expected wk_ followed by 24 to 64 letters, digits, _ or -)." + buy);
   }
@@ -498,5 +495,5 @@ if (require.main === module) {
 
 module.exports = {
   main: main, escapeData: escapeData, escapeProperty: escapeProperty, formatCommand: formatCommand,
-  getInput: getInput, setOutput: setOutput, renderSummary: renderSummary, BUY_URL: BUY_URL, KEY_RE: KEY_RE, VERSION: VERSION
+  getInput: getInput, setOutput: setOutput, renderSummary: renderSummary, KEY_RE: KEY_RE, VERSION: VERSION
 };

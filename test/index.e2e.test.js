@@ -12,7 +12,7 @@ const pkg = require("../package.json");
 const ENTRY = path.join(__dirname, "..", "src", "index.js");
 const KEY = "wk_TESTKEY0123456789abcdefghijkl";
 const GH_TOKEN = "ghs_e2eFakeToken000111";
-const BUY_URL = "https://weio.ai/services/site-check-api.html";
+const BUY_URL = "https://weio.ai/services/site-check-api.html"; // retired offer link: the output must not carry it
 
 const BAD = [
   "name: bad",
@@ -156,8 +156,9 @@ test("free mode: annotations, summary, outputs, report; nothing leaves the runne
   assert.match(r.summary, /### Fixes/);
   assert.match(r.summary, /```yaml\nconcurrency:/);
   assert.match(r.summary, /### What this check cannot see/);
-  assert.ok(r.summary.includes("Pro: add `api-key`"));
-  assert.ok(r.summary.includes(BUY_URL));
+  assert.ok(!r.summary.includes("Pro: add `api-key`"), "no Pro upsell in the no-key summary");
+  assert.ok(!r.summary.includes(BUY_URL));
+  assert.ok(!/\$\d/.test(r.summary) && !/1,000 credits/.test(r.summary));
   assert.ok(!r.summary.includes("Pro: run history"));
 });
 
@@ -384,7 +385,7 @@ const REJECTIONS = [
   [503, {}, /HTTP 503/]
 ];
 for (const [status, body, re] of REJECTIONS) {
-  test("Pro: credit endpoint " + status + " " + JSON.stringify(body.error || "") + " -> warning with the server's text and the buy link, exit 0, no job data read", async () => {
+  test("Pro: credit endpoint " + status + " " + JSON.stringify(body.error || "") + " -> warning with the server's text and no buy link, exit 0, no job data read", async () => {
     const s = await servers({status, body});
     const ws = workspace();
     const r = await run(ws, {"api-key": KEY, "github-token": GH_TOKEN}, s.env);
@@ -392,7 +393,7 @@ for (const [status, body, re] of REJECTIONS) {
     const w = r.lines.filter((l) => l.startsWith("::warning title=CI Speed Check Pro::"));
     assert.equal(w.length, 1, r.stdout);
     assert.match(w[0], re);
-    assert.ok(w[0].includes(BUY_URL));
+    assert.ok(!w[0].includes(BUY_URL));
     assert.ok(w[0].includes("(HTTP " + status + ")"));
     assert.equal(r.outputs.pro, "false");
     assert.equal(r.outputs.findings, "4", "static findings are unaffected");
@@ -432,7 +433,7 @@ test("Pro: network failure reaching Weio -> warning, exit 0", async () => {
   const r = await run(workspace(), {"api-key": KEY, "github-token": GH_TOKEN}, Object.assign({}, s.env, {WEIO_API_BASE: "http://127.0.0.1:1"}));
   assert.equal(r.code, 0);
   const w = r.lines.find((l) => l.startsWith("::warning title=CI Speed Check Pro::"));
-  assert.ok(w && /could not reach Weio/.test(w) && w.includes(BUY_URL), w);
+  assert.ok(w && /could not reach Weio/.test(w) && !w.includes(BUY_URL), w);
   assert.equal(r.outputs.pro, "false");
   assert.deepEqual(s.log, ["runs:1"]);
 });

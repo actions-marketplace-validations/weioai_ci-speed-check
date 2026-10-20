@@ -1,5 +1,5 @@
 "use strict";
-/* CI Speed Check rules: the same five deterministic checks as Weio's free browser check and paid CI audit
+/* CI Speed Check rules: the same five deterministic checks as Weio's free browser check
  * (parity-tested against test/reference/ci_check.js), with three deliberate, documented deviations (see
  * DEVIATIONS). Pure functions only: no file, network or process access, so a VS Code extension can reuse it.
  *

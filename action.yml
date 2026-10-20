@@ -1,5 +1,5 @@
 name: CI Speed Check
-description: Flags slow, wasteful CI workflow settings on every run. Optional paid run-history report.
+description: Flags slow, wasteful CI workflow settings on every run. Optional run-history report.
 author: Weio, Inc.
 branding:
   icon: zap
